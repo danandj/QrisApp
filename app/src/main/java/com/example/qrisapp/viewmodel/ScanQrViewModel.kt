@@ -51,7 +51,7 @@ class ScanQrViewModel(
                 val user = sessionManager.getUser() ?: throw Exception("Sesi pengguna tidak ditemukan")
 
                 // 3. Validate Balance
-                val currentBalance = balanceRepository.getSaldo(user.user_id) ?: user.saldo
+                val currentBalance = balanceRepository.getSaldo(user.user_id) ?: 0.0
                 if (currentBalance < qrPayment.amount) {
                     throw Exception("Saldo tidak mencukupi")
                 }
