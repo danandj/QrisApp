@@ -16,8 +16,7 @@ class BalanceRepository {
                 .decodeSingle<UserSaldo>()
 
             result.saldo
-        } catch (e: Exception) {
-            println(e.message)
+        } catch (_: Exception) {
             null
         }
     }
