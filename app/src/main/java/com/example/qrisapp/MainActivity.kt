@@ -26,6 +26,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.qrisapp.data.AuthRepository
+import com.example.qrisapp.data.BalanceRepository
+import com.example.qrisapp.data.PaymentRepository
 import com.example.qrisapp.data.SessionManager
 import com.example.qrisapp.ui.screens.DashboardScreen
 import com.example.qrisapp.ui.screens.LoginScreen
@@ -34,6 +36,7 @@ import com.example.qrisapp.ui.screens.ScanQrScreen
 
 // Screens
 import com.example.qrisapp.ui.theme.QrisAppTheme
+import com.example.qrisapp.viewmodel.DashboardViewModel
 import com.example.qrisapp.viewmodel.LoginViewModel
 import com.example.qrisapp.viewmodel.PinViewModel
 
@@ -83,6 +86,8 @@ class MainActivity : ComponentActivity() {
         
         // Repositories and Managers
         val authRepository = AuthRepository()
+        val balanceRepository = BalanceRepository()
+        val paymentRepository = PaymentRepository()
         val sessionManager = SessionManager(context)
 
         // Check login status to determine start destination
@@ -142,7 +147,12 @@ class MainActivity : ComponentActivity() {
 
             // Dashboard / Home Screen
             composable(Routes.Home) {
+                val dashboardViewModel: DashboardViewModel = viewModel(
+                    factory = DashboardViewModel.Factory(sessionManager, balanceRepository, paymentRepository)
+                )
+
                 DashboardScreen(
+                    viewModel = dashboardViewModel,
                     onScanQrClick = {
                         navController.navigate(Routes.Scan)
                     }

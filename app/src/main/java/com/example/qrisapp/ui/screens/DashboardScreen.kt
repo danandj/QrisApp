@@ -1,5 +1,6 @@
 package com.example.qrisapp.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,20 +26,24 @@ import androidx.compose.ui.unit.sp
 import com.example.qrisapp.model.Payment
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
+import com.example.qrisapp.viewmodel.DashboardViewModel
 
 val DashboardTeal = Color(0xFF355E5B)
 val LightBg = Color(0xFFF8F9FB)
 val CardTransBg = Color(0xFFF4F6F7)
 val TextGray = Color(0xFF7A7A7A)
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
+    viewModel: DashboardViewModel,
     onScanQrClick: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         containerColor = LightBg,
         topBar = {
@@ -94,7 +99,12 @@ fun DashboardScreen(
                         Text("TOTAL BALANCE", color = Color.White.copy(alpha = 0.7f), letterSpacing = 1.sp, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text("Rp", color = Color.White, fontSize = 24.sp, modifier = Modifier.padding(bottom = 8.dp, end = 4.dp))
-                            Text("4.250.000", color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.Black)
+                            val balanceText = try {
+                                String.format("%,d", uiState.balance.toLong()).replace(',', '.')
+                            } catch (e: Exception) {
+                                "Gagal memuat saldo"
+                            }
+                            Text(balanceText, color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.Black)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Surface(
@@ -105,9 +115,9 @@ fun DashboardScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Outlined.Shield, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Outlined.VerifiedUser, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Account Verified", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(uiState.userName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -159,19 +169,16 @@ fun DashboardScreen(
             }
 
             // 4. Transaction List
-            val dummyTransactions = listOf(
-                Payment(1, "QR7720192", "24 Oct, 09:41", 65000.0, "IDR"),
-                Payment(2, "QR8123001", "23 Oct, 18:20", 142000.0, "IDR"),
-                Payment(3, "QR8123002", "23 Oct, 18:20", 142000.0, "IDR"),
-                Payment(4, "QR8123003", "23 Oct, 18:20", 142000.0, "IDR"),
-                Payment(5, "QR8123004", "23 Oct, 18:20", 142000.0, "IDR"),
-                Payment(6, "QR8123005", "23 Oct, 18:20", 142000.0, "IDR"),
-                Payment(7, "QR8123004", "23 Oct, 18:20", 142000.0, "IDR")
-
-            )
-
-            items(dummyTransactions) { transaction ->
+            items(uiState.transactions) { transaction ->
                 TransactionItem(transaction)
+            }
+
+            if (uiState.isLoading) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = DashboardTeal)
+                    }
+                }
             }
 
             item { Spacer(modifier = Modifier.height(20.dp)) }
@@ -179,8 +186,15 @@ fun DashboardScreen(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun TransactionItem(item: Payment) {
+    val amountText = try {
+        String.format("%,d", (item.jumlah_bayar ?: 0.0).toLong()).replace(',', '.')
+    } catch (e: Exception) {
+        "0"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(35.dp),
@@ -207,7 +221,7 @@ fun TransactionItem(item: Payment) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text("Transaction ID: " + item.transaksi_id.toString(), fontWeight = FontWeight.Bold, fontSize = 10.sp)
-                Text(item.jumlah_bayar.toString(), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                Text("Rp $amountText", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
                 Text("Berhasil", fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color(0xFF2E8B57))
             }
         }
