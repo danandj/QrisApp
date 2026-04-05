@@ -6,6 +6,5 @@ import kotlinx.serialization.Serializable
 data class User(
     val user_id: Long,
     val username: String,
-    val nama_lengkap: String,
-    val saldo: Double
+    val nama_lengkap: String
 )

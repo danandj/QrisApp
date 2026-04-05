@@ -1,5 +1,6 @@
 package com.example.qrisapp.data
 
+import com.example.qrisapp.model.UserSaldo
 import com.example.qrisapp.network.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 
@@ -12,8 +13,9 @@ class BalanceRepository {
                 .select {
                     filter { eq("user_id", userId) }
                 }
-                .decodeSingle<Map<String, Any>>()
-            (result["saldo"] as? Number)?.toDouble()
+                .decodeSingle<UserSaldo>()
+
+            result.saldo
         } catch (e: Exception) {
             null
         }
@@ -27,7 +29,7 @@ class BalanceRepository {
                     filter { eq("user_id", userId) }
                 }
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

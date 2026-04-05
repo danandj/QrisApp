@@ -14,15 +14,13 @@ class SessionManager(private val context: Context) {
         val USER_ID = longPreferencesKey("user_id")
         val USERNAME = stringPreferencesKey("username")
         val NAMA = stringPreferencesKey("nama_lengkap")
-        val SALDO = doublePreferencesKey("saldo")
     }
 
-    suspend fun saveUser(userId: Long, username: String, nama: String, saldo: Double) {
+    suspend fun saveUser(userId: Long, username: String, nama: String) {
         context.dataStore.edit {
             it[USER_ID] = userId
             it[USERNAME] = username
             it[NAMA] = nama
-            it[SALDO] = saldo
         }
     }
 
@@ -32,22 +30,16 @@ class SessionManager(private val context: Context) {
         val userId = preferences[USER_ID] ?: return null
         val username = preferences[USERNAME] ?: return null
         val nama = preferences[NAMA] ?: return null
-        val saldo = preferences[SALDO] ?: return null
 
         return User(
             user_id = userId,
             username = username,
-            nama_lengkap = nama,
-            saldo = saldo
+            nama_lengkap = nama
         )
     }
 
     suspend fun getUserId(): Long? {
         return context.dataStore.data.first()[USER_ID]
-    }
-
-    suspend fun getSaldo(): Double? {
-        return context.dataStore.data.first()[SALDO]
     }
 
     suspend fun clearSession() {

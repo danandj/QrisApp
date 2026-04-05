@@ -50,7 +50,7 @@ fun DashboardScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("AYO Pay", fontWeight = FontWeight.ExtraBold, color = DashboardTeal)
+                    Text("AYOK Pay", fontWeight = FontWeight.ExtraBold, color = DashboardTeal)
                 },
                 actions = {
                     // Avatar Placeholder

@@ -40,7 +40,7 @@ class DashboardViewModel(
             try {
                 val user = sessionManager.getUser()
                 if (user != null) {
-                    val balance = balanceRepository.getSaldo(user.user_id) ?: user.saldo
+                    val balance = balanceRepository.getSaldo(user.user_id) ?: 0.0
                     val transactions = paymentRepository.getListPembayaran()
 
                     _uiState.update {

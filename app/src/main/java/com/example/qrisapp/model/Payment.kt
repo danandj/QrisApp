@@ -11,3 +11,12 @@ data class Payment(
     val currency: String,
     val user_id: Long
 )
+
+@Serializable
+data class PaymentInsert(
+    val referensi_id: String,
+    val tanggal_bayar: String,
+    val jumlah_bayar: Double? = null,
+    val currency: String,
+    val user_id: Long
+)

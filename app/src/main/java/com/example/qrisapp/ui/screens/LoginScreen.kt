@@ -12,7 +12,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.Wallet
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -63,28 +63,9 @@ fun LoginScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header Logo
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Wallet,
-                contentDescription = null,
-                tint = PrimaryTeal
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "AYO Pay",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = PrimaryTeal
-            )
-        }
 
         Spacer(modifier = Modifier.height(60.dp))
 
-        // Shield Icon Circle
         Box(
             modifier = Modifier
                 .size(80.dp)
@@ -92,7 +73,7 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Shield,
+                imageVector = Icons.Default.Verified,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(40.dp)
@@ -102,14 +83,14 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Selamat Datang",
+            text = "AYOK Pay",
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color.Black
         )
 
         Text(
-            text = "Silahkan anda login terlebih dahulu untuk mulai melakukan pembayaran.",
+            text = "Silahkan login terlebih dahulu untuk mulai melakukan pembayaran.",
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             color = Color.Gray,
             modifier = Modifier.padding(top = 8.dp)
@@ -117,7 +98,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Card Area
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(40.dp),
@@ -140,6 +120,8 @@ fun LoginScreen(
                     shape = RoundedCornerShape(24.dp),
                     placeholder = { Text(text = "Enter your username", color = TextGray) },
                     colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White,
                         unfocusedBorderColor = Color.Transparent,
@@ -167,6 +149,8 @@ fun LoginScreen(
                         if (passwordVisible) VisualTransformation.None
                         else PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
                         focusedContainerColor = Color.White,
                         unfocusedContainerColor = Color.White,
                         unfocusedBorderColor = Color.Transparent,
@@ -176,18 +160,15 @@ fun LoginScreen(
                         Icon(Icons.Outlined.Lock, null)
                     },
                     trailingIcon = {
-                        val image =
-                            if (passwordVisible)
-                                android.R.drawable.ic_menu_close_clear_cancel
-                            else
-                                android.R.drawable.ic_menu_view
-
                         IconButton(
                             onClick = { passwordVisible = !passwordVisible }
                         ) {
                             Icon(
-                                painter = painterResource(id = image),
-                                contentDescription = null,
+                                imageVector = if (passwordVisible)
+                                    Icons.Outlined.Visibility
+                                else
+                                    Icons.Outlined.VisibilityOff,
+                                contentDescription = if (passwordVisible) "Hide password" else "Show password",
                                 tint = TextGray
                             )
                         }
@@ -213,9 +194,9 @@ fun LoginScreen(
                         )
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("LOGIN", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("LOGIN", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color.White)
                         }
                     }
                 }

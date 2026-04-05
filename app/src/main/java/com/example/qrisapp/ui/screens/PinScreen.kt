@@ -73,7 +73,7 @@ fun PinScreen(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        Text("AYO Pay", fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF2D5D5A))
+        Text("AYOK Pay", fontSize = 32.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF2D5D5A))
         Spacer(modifier = Modifier.height(20.dp))
         Text("Masukan PIN Untuk Melanjutkan", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
@@ -97,7 +97,7 @@ fun PinScreen(
 
         Text(
             text = viewModel.errorMessage?.takeIf { it.isNotBlank() } ?: "",
-            color = MaterialTheme.colorScheme.error,
+            color = Color.Red,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()

@@ -7,6 +7,7 @@ import com.example.qrisapp.data.BalanceRepository
 import com.example.qrisapp.data.PaymentRepository
 import com.example.qrisapp.data.SessionManager
 import com.example.qrisapp.model.Payment
+import com.example.qrisapp.model.PaymentInsert
 import com.example.qrisapp.model.QrPayment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -64,8 +65,7 @@ class ScanQrViewModel(
 
                 // 5. Save Transaction History
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val payment = Payment(
-                    transaksi_id = System.currentTimeMillis(),
+                val paymentInsert = PaymentInsert(
                     referensi_id = qrPayment.reference_id,
                     tanggal_bayar = dateFormat.format(Date()),
                     jumlah_bayar = qrPayment.amount.toDouble(),
@@ -73,7 +73,7 @@ class ScanQrViewModel(
                     user_id = user.user_id
                 )
 
-                val saveSuccess = paymentRepository.simpanPembayaran(payment)
+                val saveSuccess = paymentRepository.simpanPembayaran(paymentInsert)
                 if (!saveSuccess) {
                     throw Exception("Gagal menyimpan riwayat transaksi")
                 }
@@ -84,6 +84,10 @@ class ScanQrViewModel(
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message ?: "Terjadi kesalahan") }
             }
         }
+    }
+
+    fun resetError() {
+        _uiState.update { it.copy(errorMessage = null, isSuccess = false, isLoading = false) }
     }
 
     class Factory(

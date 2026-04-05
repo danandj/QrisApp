@@ -140,7 +140,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "AYO Pay v$versionName • STTI Tanjungpinang",
+                text = "AYOK Pay v$versionName • STTI Tanjungpinang",
                 fontSize = 13.sp,
                 color = Color.LightGray,
                 letterSpacing = 1.sp

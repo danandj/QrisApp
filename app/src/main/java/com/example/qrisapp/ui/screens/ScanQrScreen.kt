@@ -76,13 +76,25 @@ fun ScanQrScreen(
         if (uiState.isSuccess) {
             snackbarHostState.showSnackbar("Pembayaran Berhasil")
             onSuccess()
-        } else if (uiState.errorMessage != null) {
-            snackbarHostState.showSnackbar(uiState.errorMessage!!)
+            onBackClick()
         }
     }
 
     if (uiState.isLoading) {
         LoadingDialog( true)
+    }
+
+    if (uiState.errorMessage != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.resetError() },
+            title = { Text("Gagal") },
+            text = { Text(uiState.errorMessage!!) },
+            confirmButton = {
+                Button(onClick = { viewModel.resetError() }) {
+                    Text("Coba Lagi")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -125,7 +137,8 @@ fun ScanQrScreen(
                 onCameraReady = {
                     cameraControl = it
                 },
-                isLoading = uiState.isLoading
+                isLoading = uiState.isLoading,
+                isError = uiState.errorMessage != null
             )
         }
     }
@@ -137,7 +150,8 @@ fun CameraPreviewPro(
     modifier: Modifier = Modifier,
     onQrDetected: (String) -> Unit,
     onCameraReady: (CameraControl) -> Unit,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isError: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -145,14 +159,11 @@ fun CameraPreviewPro(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     var scanned by remember { mutableStateOf(false) }
-    
-    // Reset scanned state when loading finishes and it wasn't a success (error case)
-    // Actually, it's better to let the ViewModel handle the state.
-    // But we need to prevent multiple scans of the same QR.
-    
-    LaunchedEffect(isLoading) {
-        if (!isLoading) {
-             scanned = false
+
+    LaunchedEffect(isLoading, isError) {
+        if (!isLoading && !isError) {
+            kotlinx.coroutines.delay(1000) // delay 1 detik
+            scanned = false
         }
     }
 
