@@ -12,7 +12,7 @@ class PaymentRepository {
                 .from("pembayaran")
                 .select()
                 .decodeList<Payment>()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
@@ -23,7 +23,7 @@ class PaymentRepository {
                 .from("pembayaran")
                 .insert(paymentInsert)
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

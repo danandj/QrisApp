@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.qrisapp.data.BalanceRepository
 import com.example.qrisapp.data.PaymentRepository
 import com.example.qrisapp.data.SessionManager
-import com.example.qrisapp.model.Payment
 import com.example.qrisapp.model.PaymentInsert
 import com.example.qrisapp.model.QrPayment
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +42,7 @@ class ScanQrViewModel(
                 // 1. Validate JSON format
                 val qrPayment = try {
                     json.decodeFromString<QrPayment>(qrData)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     throw Exception("Format QR tidak valid")
                 }
 

@@ -38,10 +38,6 @@ class SessionManager(private val context: Context) {
         )
     }
 
-    suspend fun getUserId(): Long? {
-        return context.dataStore.data.first()[USER_ID]
-    }
-
     suspend fun clearSession() {
         context.dataStore.edit { it.clear() }
     }
