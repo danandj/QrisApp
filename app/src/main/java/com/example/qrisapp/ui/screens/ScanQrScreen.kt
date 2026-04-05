@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.qrisapp.viewmodel.ScanQrViewModel
@@ -71,13 +72,21 @@ fun ScanQrScreen(
         }
     }
 
-    // Handle success/error states
-    LaunchedEffect(uiState.isSuccess, uiState.errorMessage) {
-        if (uiState.isSuccess) {
-            snackbarHostState.showSnackbar("Pembayaran Berhasil")
-            onSuccess()
-            onBackClick()
-        }
+    if (uiState.isSuccess) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Sukses") },
+            text = { Text("Pembayaran Berhasil") },
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
+            ),
+            confirmButton = {
+                Button(onClick = { onSuccess() }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 
     if (uiState.isLoading) {
@@ -125,7 +134,6 @@ fun ScanQrScreen(
             )
         }
     ) { padding ->
-
         if (hasPermission) {
             CameraPreviewPro(
                 modifier = Modifier
@@ -138,7 +146,8 @@ fun ScanQrScreen(
                     cameraControl = it
                 },
                 isLoading = uiState.isLoading,
-                isError = uiState.errorMessage != null
+                isError = uiState.errorMessage != null,
+                isSuccess = uiState.isSuccess
             )
         }
     }
@@ -151,23 +160,22 @@ fun CameraPreviewPro(
     onQrDetected: (String) -> Unit,
     onCameraReady: (CameraControl) -> Unit,
     isLoading: Boolean = false,
-    isError: Boolean = false
+    isError: Boolean = false,
+    isSuccess: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-
     var scanned by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isLoading, isError) {
-        if (!isLoading && !isError) {
-            kotlinx.coroutines.delay(1000) // delay 1 detik
+    LaunchedEffect(isLoading, isError, isSuccess) {
+        if (!isLoading && !isError && !isSuccess) {
+            kotlinx.coroutines.delay(1000)
             scanned = false
         }
     }
 
-    // 🔊 Beep sound
+    // Beep sound
     fun playBeep() {
         val toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
@@ -194,7 +202,7 @@ fun CameraPreviewPro(
                         .build()
                     analyzer.setAnalyzer(cameraExecutor) { imageProxy ->
                         val mediaImage = imageProxy.image
-                        if (mediaImage != null && !scanned && !isLoading) {
+                        if (mediaImage != null && !scanned && !isLoading && !isSuccess) {
                             val image = InputImage.fromMediaImage(
                                 mediaImage,
                                 imageProxy.imageInfo.rotationDegrees

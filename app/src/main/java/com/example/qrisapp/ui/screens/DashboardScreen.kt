@@ -238,7 +238,7 @@ fun BottomNavigation(
     onSettingsClick: () -> Unit
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Dashboard", "Scan", "Settings")
+    val items = listOf("Dashboard", "Scan", "Profile")
     val icons = listOf(
         Icons.Filled.GridView,
         Icons.Outlined.QrCodeScanner,

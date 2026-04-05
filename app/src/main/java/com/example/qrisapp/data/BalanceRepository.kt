@@ -17,6 +17,7 @@ class BalanceRepository {
 
             result.saldo
         } catch (e: Exception) {
+            println(e.message)
             null
         }
     }

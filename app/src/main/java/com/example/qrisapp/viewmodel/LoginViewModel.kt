@@ -36,8 +36,7 @@ class LoginViewModel(
                 sessionManager.saveUser(
                     userId = user.user_id,
                     username = user.username,
-                    nama = user.nama_lengkap,
-                    saldo = user.saldo
+                    nama = user.nama_lengkap
                 )
                 isSuccess = true
             }.onFailure { exception ->

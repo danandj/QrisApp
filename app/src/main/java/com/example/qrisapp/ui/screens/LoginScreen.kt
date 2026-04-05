@@ -119,6 +119,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     placeholder = { Text(text = "Enter your username", color = TextGray) },
+                    singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black,
@@ -145,6 +146,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     placeholder = { Text(text = "Enter your password", color = TextGray) },
+                    singleLine = true,
                     visualTransformation =
                         if (passwordVisible) VisualTransformation.None
                         else PasswordVisualTransformation(),

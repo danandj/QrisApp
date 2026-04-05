@@ -197,9 +197,7 @@ class MainActivity : ComponentActivity() {
                         navController.popBackStack()
                     },
                     onSuccess = {
-                        navController.navigate(Routes.Home) {
-                            popUpTo(Routes.Home) { inclusive = true }
-                        }
+                        navController.popBackStack()
                     }
                 )
             }
