@@ -24,7 +24,6 @@ import com.example.qrisapp.viewmodel.ProfileViewModel
 val ProfileBg = Color(0xFFF8F9FB)
 val LogoutRed = Color(0xFFFDE2DE)
 val LogoutText = Color(0xFF963E3E)
-val CardSurface = Color(0xFFF4F6F7)
 val DeepTeal = Color(0xFF2D5D5A)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +46,7 @@ fun ProfileScreen(
         try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             packageInfo.versionName
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             "1.0.0"
         }
     }
