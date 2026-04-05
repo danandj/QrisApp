@@ -8,5 +8,6 @@ data class Payment(
     val referensi_id: String,
     val tanggal_bayar: String,
     val jumlah_bayar: Double? = null,
-    val currency: String
+    val currency: String,
+    val user_id: Long
 )

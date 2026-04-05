@@ -39,6 +39,7 @@ import com.example.qrisapp.ui.theme.QrisAppTheme
 import com.example.qrisapp.viewmodel.DashboardViewModel
 import com.example.qrisapp.viewmodel.LoginViewModel
 import com.example.qrisapp.viewmodel.PinViewModel
+import com.example.qrisapp.viewmodel.ScanQrViewModel
 
 
 /**
@@ -161,12 +162,19 @@ class MainActivity : ComponentActivity() {
 
             // Scan QR Screen
             composable(Routes.Scan) {
+                val scanQrViewModel: ScanQrViewModel = viewModel(
+                    factory = ScanQrViewModel.Factory(sessionManager, balanceRepository, paymentRepository)
+                )
+
                 ScanQrScreen(
+                    viewModel = scanQrViewModel,
                     onBackClick = {
                         navController.popBackStack()
                     },
-                    onResult = { qrValue ->
-                        println("Hasil QR: $qrValue")
+                    onSuccess = {
+                        navController.navigate(Routes.Home) {
+                            popUpTo(Routes.Home) { inclusive = true }
+                        }
                     }
                 )
             }

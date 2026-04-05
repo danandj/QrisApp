@@ -1,5 +1,6 @@
 package com.example.qrisapp.ui.screens
 
+import LoadingDialog
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -20,7 +21,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.*
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.qrisapp.viewmodel.ScanQrViewModel
 import com.google.mlkit.vision.barcode.*
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
@@ -40,10 +41,14 @@ import java.util.concurrent.Executors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanQrScreen(
+    viewModel: ScanQrViewModel,
     onBackClick: () -> Unit,
-    onResult: (String) -> Unit
+    onSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
     var isFlashOn by remember { mutableStateOf(false) }
     var cameraControl by remember { mutableStateOf<CameraControl?>(null) }
 
@@ -66,7 +71,22 @@ fun ScanQrScreen(
         }
     }
 
+    // Handle success/error states
+    LaunchedEffect(uiState.isSuccess, uiState.errorMessage) {
+        if (uiState.isSuccess) {
+            snackbarHostState.showSnackbar("Pembayaran Berhasil")
+            onSuccess()
+        } else if (uiState.errorMessage != null) {
+            snackbarHostState.showSnackbar(uiState.errorMessage!!)
+        }
+    }
+
+    if (uiState.isLoading) {
+        LoadingDialog( true)
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Scan QR Code", color = Color.White) },
@@ -100,12 +120,12 @@ fun ScanQrScreen(
                     .fillMaxSize()
                     .padding(padding),
                 onQrDetected = {
-                    onResult(it)
-                    onBackClick()
+                    viewModel.processQrResult(it)
                 },
                 onCameraReady = {
                     cameraControl = it
-                }
+                },
+                isLoading = uiState.isLoading
             )
         }
     }
@@ -116,7 +136,8 @@ fun ScanQrScreen(
 fun CameraPreviewPro(
     modifier: Modifier = Modifier,
     onQrDetected: (String) -> Unit,
-    onCameraReady: (CameraControl) -> Unit
+    onCameraReady: (CameraControl) -> Unit,
+    isLoading: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -124,6 +145,16 @@ fun CameraPreviewPro(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     var scanned by remember { mutableStateOf(false) }
+    
+    // Reset scanned state when loading finishes and it wasn't a success (error case)
+    // Actually, it's better to let the ViewModel handle the state.
+    // But we need to prevent multiple scans of the same QR.
+    
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+             scanned = false
+        }
+    }
 
     // 🔊 Beep sound
     fun playBeep() {
@@ -152,7 +183,7 @@ fun CameraPreviewPro(
                         .build()
                     analyzer.setAnalyzer(cameraExecutor) { imageProxy ->
                         val mediaImage = imageProxy.image
-                        if (mediaImage != null && !scanned) {
+                        if (mediaImage != null && !scanned && !isLoading) {
                             val image = InputImage.fromMediaImage(
                                 mediaImage,
                                 imageProxy.imageInfo.rotationDegrees
