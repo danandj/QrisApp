@@ -95,6 +95,11 @@ class MainActivity : ComponentActivity() {
         val paymentRepository = PaymentRepository()
         val sessionManager = SessionManager(context)
 
+        // Shared DashboardViewModel to allow explicit refresh from other screens
+        val dashboardViewModel: DashboardViewModel = viewModel(
+            factory = DashboardViewModel.Factory(sessionManager, balanceRepository, paymentRepository)
+        )
+
         // Check login status to determine start destination
         var startDestination by remember { mutableStateOf<String?>(null) }
 
@@ -151,10 +156,6 @@ class MainActivity : ComponentActivity() {
 
             // Dashboard / Home Screen
             composable(Routes.Home) {
-                val dashboardViewModel: DashboardViewModel = viewModel(
-                    factory = DashboardViewModel.Factory(sessionManager, balanceRepository, paymentRepository)
-                )
-
                 DashboardScreen(
                     viewModel = dashboardViewModel,
                     onScanQrClick = {
@@ -197,6 +198,7 @@ class MainActivity : ComponentActivity() {
                         navController.popBackStack()
                     },
                     onSuccess = {
+                        dashboardViewModel.loadDashboardData()
                         navController.popBackStack()
                     }
                 )

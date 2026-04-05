@@ -62,6 +62,13 @@ class ScanQrViewModel(
                     throw Exception("Gagal memperbarui saldo")
                 }
 
+                // Update local session to ensure Dashboard reflects changes immediately
+                sessionManager.saveUser(
+                    userId = user.user_id,
+                    username = user.username,
+                    nama = user.nama_lengkap
+                )
+
                 // 5. Save Transaction History
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val paymentInsert = PaymentInsert(
