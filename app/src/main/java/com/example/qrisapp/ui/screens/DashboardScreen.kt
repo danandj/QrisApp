@@ -26,6 +26,7 @@ import com.example.qrisapp.model.Payment
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import com.example.qrisapp.viewmodel.DashboardViewModel
 
@@ -75,116 +76,116 @@ fun DashboardScreen(
             }
         ) }
     ) { paddingValues ->
-        LazyColumn(
+        PullToRefreshBox(
+            isRefreshing = uiState.isLoading,
+            onRefresh = { viewModel.loadDashboardData() },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
         ) {
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                item { Spacer(modifier = Modifier.height(8.dp)) }
 
-            // 1. Balance Card
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp),
-                    shape = RoundedCornerShape(60.dp),
-                    colors = CardDefaults.cardColors(containerColor = DashboardTeal)
-                ) {
-                    Column(
+                // 1. Balance Card
+                item {
+                    Card(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(32.dp),
-                        verticalArrangement = Arrangement.Center
+                            .fillMaxWidth()
+                            .height(220.dp),
+                        shape = RoundedCornerShape(60.dp),
+                        colors = CardDefaults.cardColors(containerColor = DashboardTeal)
                     ) {
-                        Text("TOTAL BALANCE", color = Color.White.copy(alpha = 0.7f), letterSpacing = 1.sp, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text("Rp", color = Color.White, fontSize = 24.sp, modifier = Modifier.padding(bottom = 8.dp, end = 4.dp))
-                            val balanceText = try {
-                                String.format("%,d", uiState.balance.toLong()).replace(',', '.')
-                            } catch (_: Exception) {
-                                "Gagal memuat saldo"
-                            }
-                            Text(balanceText, color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.Black)
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Surface(
-                            color = Color.White.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(20.dp)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(32.dp),
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                            Text("TOTAL BALANCE", color = Color.White.copy(alpha = 0.7f), letterSpacing = 1.sp, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text("Rp", color = Color.White, fontSize = 24.sp, modifier = Modifier.padding(bottom = 8.dp, end = 4.dp))
+                                val balanceText = try {
+                                    String.format("%,d", uiState.balance.toLong()).replace(',', '.')
+                                } catch (_: Exception) {
+                                    "Gagal memuat saldo"
+                                }
+                                Text(balanceText, color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.Black)
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Surface(
+                                color = Color.White.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(20.dp)
                             ) {
-                                Icon(Icons.Outlined.VerifiedUser, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(uiState.userName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(Icons.Outlined.VerifiedUser, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(uiState.userName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // 2. QR Button
-            item {
-                Button(
-                    onClick = {
-                        onScanQrClick()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(90.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DashboardTeal),
-                    shape = RoundedCornerShape(45.dp)
-                ) {
+                // 2. QR Button
+                item {
+                    Button(
+                        onClick = {
+                            onScanQrClick()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(90.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = DashboardTeal),
+                        shape = RoundedCornerShape(45.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Surface(
+                                modifier = Modifier.size(48.dp),
+                                shape = CircleShape,
+                                color = Color.White
+                            ) {
+                                Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = DashboardTeal, modifier = Modifier.padding(12.dp))
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text("Bayar via QR", fontSize = 20.sp, fontWeight = FontWeight.Bold,  color = Color.White)
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Icon(Icons.Default.ChevronRight, contentDescription = null,  tint = Color.White)
+                        }
+                    }
+                }
+
+                // 3. Transaction Header
+                item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Surface(
-                            modifier = Modifier.size(48.dp),
-                            shape = CircleShape,
-                            color = Color.White
-                        ) {
-                            Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = DashboardTeal, modifier = Modifier.padding(12.dp))
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text("Bayar via QR", fontSize = 20.sp, fontWeight = FontWeight.Bold,  color = Color.White)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Icon(Icons.Default.ChevronRight, contentDescription = null,  tint = Color.White)
+                        Text("Riwayat Transaksi", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+                        Text("Lihat Semua", color = DashboardTeal, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                 }
-            }
 
-            // 3. Transaction Header
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Riwayat Transaksi", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-                    Text("Lihat Semua", color = DashboardTeal, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                // 4. Transaction List
+                items(uiState.transactions) { transaction ->
+                    TransactionItem(transaction)
                 }
-            }
 
-            // 4. Transaction List
-            items(uiState.transactions) { transaction ->
-                TransactionItem(transaction)
+                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
-
-            if (uiState.isLoading) {
-                item {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = DashboardTeal)
-                    }
-                }
-            }
-
-            item { Spacer(modifier = Modifier.height(20.dp)) }
         }
     }
 }
