@@ -32,6 +32,7 @@ import com.example.qrisapp.data.SessionManager
 import com.example.qrisapp.ui.screens.DashboardScreen
 import com.example.qrisapp.ui.screens.LoginScreen
 import com.example.qrisapp.ui.screens.PinScreen
+import com.example.qrisapp.ui.screens.ProfileScreen
 import com.example.qrisapp.ui.screens.ScanQrScreen
 
 // Screens
@@ -39,6 +40,7 @@ import com.example.qrisapp.ui.theme.QrisAppTheme
 import com.example.qrisapp.viewmodel.DashboardViewModel
 import com.example.qrisapp.viewmodel.LoginViewModel
 import com.example.qrisapp.viewmodel.PinViewModel
+import com.example.qrisapp.viewmodel.ProfileViewModel
 import com.example.qrisapp.viewmodel.ScanQrViewModel
 
 
@@ -53,6 +55,8 @@ object Routes {
     const val Pin = "pin"
 
     const val Scan = "scan"
+
+    const val Profile = "profile"
 }
 
 class MainActivity : ComponentActivity() {
@@ -104,7 +108,6 @@ class MainActivity : ComponentActivity() {
         }
 
         if (startDestination == null) {
-            // Loading state while checking session
             return
         }
 
@@ -156,6 +159,28 @@ class MainActivity : ComponentActivity() {
                     viewModel = dashboardViewModel,
                     onScanQrClick = {
                         navController.navigate(Routes.Scan)
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Routes.Profile)
+                    }
+                )
+            }
+
+            // Profile Screen
+            composable(Routes.Profile) {
+                val profileViewModel: ProfileViewModel = viewModel(
+                    factory = ProfileViewModel.Factory(sessionManager)
+                )
+                
+                ProfileScreen(
+                    viewModel = profileViewModel,
+                    onLogoutSuccess = {
+                        navController.navigate(Routes.Login) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onBackClick = {
+                        navController.popBackStack()
                     }
                 )
             }

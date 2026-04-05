@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +39,8 @@ val TextGray = Color(0xFF7A7A7A)
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    onScanQrClick: () -> Unit
+    onScanQrClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -69,6 +69,9 @@ fun DashboardScreen(
         bottomBar = { BottomNavigation(
             onScanQrClick = {
                 onScanQrClick()
+            },
+            onSettingsClick = {
+                onSettingsClick()
             }
         ) }
     ) { paddingValues ->
@@ -101,7 +104,7 @@ fun DashboardScreen(
                             Text("Rp", color = Color.White, fontSize = 24.sp, modifier = Modifier.padding(bottom = 8.dp, end = 4.dp))
                             val balanceText = try {
                                 String.format("%,d", uiState.balance.toLong()).replace(',', '.')
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 "Gagal memuat saldo"
                             }
                             Text(balanceText, color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.Black)
@@ -191,7 +194,7 @@ fun DashboardScreen(
 fun TransactionItem(item: Payment) {
     val amountText = try {
         String.format("%,d", (item.jumlah_bayar ?: 0.0).toLong()).replace(',', '.')
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "0"
     }
 
@@ -230,9 +233,10 @@ fun TransactionItem(item: Payment) {
 
 @Composable
 fun BottomNavigation(
-    onScanQrClick: () -> Unit
+    onScanQrClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf("Dashboard", "Scan", "Settings")
     val icons = listOf(
         Icons.Filled.GridView,
@@ -277,6 +281,9 @@ fun BottomNavigation(
                                     indication = null
                                 ) {
                                     selectedItem = index
+                                    if (index == 2) {
+                                        onSettingsClick()
+                                    }
                                 },
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
