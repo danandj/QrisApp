@@ -44,6 +44,7 @@ fun DashboardScreen(
     onSettingsClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.loadDashboardData()
 
     Scaffold(
         containerColor = LightBg,
